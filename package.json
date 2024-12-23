@@ -7,14 +7,13 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "eslint": "^8.57.0",
+    "eslint": "^9.15.0",
+    "@repo/eslint-config": "*",
     "prettier": "^3.2.5",
     "turbo": "^2.3.3"
   },
-  "name": "with-vite",
+  "name": "saas",
+  "type": "module",
   "packageManager": "npm@9.8.1",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+  "workspaces": ["apps/*", "packages/*"]
 }
