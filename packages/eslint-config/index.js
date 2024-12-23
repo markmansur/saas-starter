@@ -1,8 +1,8 @@
-const tseslint = require("typescript-eslint");
-const js = require("@eslint/js");
+import { config, configs } from "typescript-eslint";
+import lintjs from "@eslint/js";
 
-module.exports = tseslint.config({
-  extends: [js.configs.recommended, ...tseslint.configs.recommended],
+export default config({
+  extends: [lintjs.configs.recommended, ...configs.recommended],
   files: ["**/*.{ts,tsx}"],
   rules: {},
 });
