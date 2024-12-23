@@ -39,7 +39,7 @@ export class StaticWebsite extends Construct {
 
     const originAccessIdentity = new OriginAccessIdentity(
       this,
-      "originAccessIdentity"
+      "originAccessIdentity",
     );
     bucket.grantRead(originAccessIdentity);
 
