@@ -1,12 +1,11 @@
 import { Construct } from "constructs";
 import { Bucket } from "aws-cdk-lib/aws-s3";
 import {
-  OriginAccessIdentity,
   Distribution,
+  OriginAccessIdentity,
   ViewerProtocolPolicy,
 } from "aws-cdk-lib/aws-cloudfront";
-import { S3Origin } from "aws-cdk-lib/aws-cloudfront-origins";
-import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
+import { BucketDeployment, ISource } from "aws-cdk-lib/aws-s3-deployment";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import { RemovalPolicy, CfnOutput } from "aws-cdk-lib";
 import {
@@ -17,9 +16,10 @@ import {
 } from "aws-cdk-lib/aws-route53";
 import { CloudFrontTarget } from "aws-cdk-lib/aws-route53-targets";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
+import { S3BucketOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 
 export interface StaticWebsiteProps {
-  sources: string[];
+  sources: ISource[];
   defaultRootObject?: string;
   hostedZone?: HostedZone;
   domainName?: string;
@@ -39,7 +39,7 @@ export class StaticWebsite extends Construct {
 
     const originAccessIdentity = new OriginAccessIdentity(
       this,
-      "originAccessIdentity",
+      "originAccessIdentity"
     );
     bucket.grantRead(originAccessIdentity);
 
@@ -56,7 +56,9 @@ export class StaticWebsite extends Construct {
           ]
         : [],
       defaultBehavior: {
-        origin: new S3Origin(bucket, { originAccessIdentity }),
+        origin: S3BucketOrigin.withOriginAccessControl(bucket, {
+          originAccessControlId: originAccessIdentity.originAccessIdentityId,
+        }),
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
       domainNames: props.domainName
@@ -67,7 +69,7 @@ export class StaticWebsite extends Construct {
 
     new BucketDeployment(this, "BucketDeployment", {
       destinationBucket: bucket,
-      sources: props.sources.map((s) => Source.asset(s)),
+      sources: props.sources,
       logRetention: RetentionDays.ONE_MONTH,
     });
 
